@@ -1,213 +1,134 @@
 'use client';
-import { ThemeToggle } from '@/components/theme-toggle';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Home,
   Calendar,
+  ClipboardList,
   CreditCard,
   Layers,
   Settings,
-  ClipboardList,
-  ChevronDown,
-  ChevronRight,
   Menu,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function Sidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedKos, setSelectedKos] = useState('SmartKos 1');
 
-  // State submenu
-  const [openPenyewaan, setOpenPenyewaan] = useState(false);
-  const [openPembayaran, setOpenPembayaran] = useState(false);
-  const [openMaster, setOpenMaster] = useState(false);
-  const [openPengaturan, setOpenPengaturan] = useState(false);
+  // Ambil pathname dari Next.js (aman untuk SSR)
+  const pathname = usePathname();
 
-  const linkClass =
-    'flex items-center px-4 py-2 text-sm rounded-lg hover:bg-[#2c3034] text-gray-300 transition';
-  const activeLink =
-    'flex items-center px-4 py-2 text-sm rounded-lg bg-[#0d6efd]/10 text-[#0d6efd] font-semibold';
+  const kosList = ['SmartKos 1', 'SmartKos 2', 'SmartKos 3'];
+
+  const menuItems = [
+    { href: '/', label: 'Dashboard', icon: <Home className="w-4 h-4" /> },
+    { href: '/kalender', label: 'Kalender', icon: <Calendar className="w-4 h-4" /> },
+    { href: '/penyewaan', label: 'Penyewaan', icon: <ClipboardList className="w-4 h-4" /> },
+    { href: '/pembayaran', label: 'Pembayaran', icon: <CreditCard className="w-4 h-4" /> },
+    { href: '/master', label: 'Master Data', icon: <Layers className="w-4 h-4" /> },
+    { href: '/pengaturan', label: 'Pengaturan', icon: <Settings className="w-4 h-4" /> },
+  ];
 
   return (
     <>
-      {/* Overlay mobile */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/30 z-40 md:hidden"
           onClick={() => setSidebarOpen(false)}
         ></div>
       )}
 
-      {/* Sidebar utama */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#1c1f23] transform ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-0`}
+        className={`fixed md:static z-50 inset-y-0 left-0 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out shadow-lg md:shadow-none ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        }`}
       >
-        {/* Header Sidebar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-700">
-          <h1 className="text-xl font-semibold text-[#ffffff]">SmartKos</h1>
+        {/* Header Dropdown */}
+        <div className="px-6 py-4 border-b border-gray-100 relative">
           <button
-            className="md:hidden text-gray-300"
-            onClick={() => setSidebarOpen(false)}
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="w-full flex items-center justify-between text-lg font-bold text-blue-600 hover:text-blue-700 transition"
           >
-            ✕
+            {selectedKos}
+            {dropdownOpen ? (
+              <ChevronUp className="w-4 h-4 text-gray-600" />
+            ) : (
+              <ChevronDown className="w-4 h-4 text-gray-600" />
+            )}
           </button>
+
+          {dropdownOpen && (
+            <div className="absolute left-6 right-6 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 animate-fadeIn">
+              {kosList.map((kos) => (
+                <button
+                  key={kos}
+                  onClick={() => {
+                    setSelectedKos(kos);
+                    setDropdownOpen(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 text-sm rounded-md transition-colors ${
+                    selectedKos === kos
+                      ? 'bg-blue-50 text-blue-700 font-semibold'
+                      : 'hover:bg-gray-50 text-gray-700'
+                  }`}
+                >
+                  {kos}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Menu Navigasi */}
-        <nav className="px-3 py-6 space-y-1 text-sm">
-          {/* Dashboard */}
-          <Link href="/" className={activeLink}>
-            <Home className="w-4 h-4 mr-2  text-indigo-400" /> Dashboard
-          </Link>
-
-          {/* Kalender */}
-          <Link href="/jadwal" className={linkClass}>
-            <Calendar className="w-4 h-4 mr-2 text-indigo-400" /> Kalender
-          </Link>
-
-          {/* Penyewaan */}
-          <div>
-            <button
-              onClick={() => setOpenPenyewaan(!openPenyewaan)}
-              className={`${linkClass} w-full justify-between`}
-            >
-              <span className="flex items-center">
-                <ClipboardList className="w-4 h-4 mr-2 text-indigo-400" />
-                Penyewaan
-              </span>
-              {openPenyewaan ? (
-                <ChevronDown className="w-4 h-4" />
-              ) : (
-                <ChevronRight className="w-4 h-4" />
-              )}
-            </button>
-            {openPenyewaan && (
-              <div className="ml-6 mt-1 space-y-1">
-                <Link href="/penyewaan/booking" className={linkClass}>
-                  Booking Baru
-                </Link>
-                <Link href="/penyewaan/aktif" className={linkClass}>
-                  Daftar Sewa Aktif
-                </Link>
-                <Link href="/penyewaan/riwayat" className={linkClass}>
-                  Riwayat Sewa
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Pembayaran */}
-          <div>
-            <button
-              onClick={() => setOpenPembayaran(!openPembayaran)}
-              className={`${linkClass} w-full justify-between`}
-            >
-              <span className="flex items-center">
-                <CreditCard className="w-4 h-4 mr-2 text-indigo-400" />
-                Pembayaran
-              </span>
-              {openPembayaran ? (
-                <ChevronDown className="w-4 h-4" />
-              ) : (
-                <ChevronRight className="w-4 h-4" />
-              )}
-            </button>
-            {openPembayaran && (
-              <div className="ml-6 mt-1 space-y-1">
-                <Link href="/pembayaran/tagihan" className={linkClass}>
-                  Tagihan (Invoice)
-                </Link>
-                <Link href="/pembayaran/laporan" className={linkClass}>
-                  Laporan
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Master Data */}
-          <div>
-            <button
-              onClick={() => setOpenMaster(!openMaster)}
-              className={`${linkClass} w-full justify-between`}
-            >
-              <span className="flex items-center">
-                <Layers className="w-4 h-4 mr-2 text-indigo-400" />
-                Master Data
-              </span>
-              {openMaster ? (
-                <ChevronDown className="w-4 h-4" />
-              ) : (
-                <ChevronRight className="w-4 h-4" />
-              )}
-            </button>
-            {openMaster && (
-              <div className="ml-6 mt-1 space-y-1">
-                <Link href="/master/lokasi" className={linkClass}>
-                  Lokasi Kos
-                </Link>
-                <Link href="/master/kamar" className={linkClass}>
-                  Kamar
-                </Link>
-                <Link href="/master/jenis-kamar" className={linkClass}>
-                  Jenis Kamar
-                </Link>
-                <Link href="/master/parkiran" className={linkClass}>
-                  Parkiran
-                </Link>
-                <Link href="/master/pricing" className={linkClass}>
-                  Pricing
-                </Link>
-                <Link href="/master/promo" className={linkClass}>
-                  Promo
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Pengaturan */}
-          <div>
-            <button
-              onClick={() => setOpenPengaturan(!openPengaturan)}
-              className={`${linkClass} w-full justify-between`}
-            >
-              <span className="flex items-center">
-                <Settings className="w-4 h-4 mr-2 text-indigo-400" />
-                Pengaturan
-              </span>
-              {openPengaturan ? (
-                <ChevronDown className="w-4 h-4" />
-              ) : (
-                <ChevronRight className="w-4 h-4" />
-              )}
-            </button>
-            {openPengaturan && (
-              <div className="ml-6 mt-1 space-y-1">
-                <Link href="/pengaturan/pengguna" className={linkClass}>
-                  Manajemen Pengguna
-                </Link>
-                <Link href="/pengaturan/sistem" className={linkClass}>
-                  Pengaturan Sistem
-                </Link>
-              </div>
-            )}
-          </div>
+        <nav className="p-4 space-y-1">
+          {menuItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm transition-all ${
+                  isActive
+                    ? 'bg-blue-100 text-blue-700 font-semibold'
+                    : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+                }`}
+              >
+                <span className="text-blue-500">{item.icon}</span>
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
-            {/* Tombol Theme Toggle di bawah menu */}
-            <div className="mt-6 px-4 flex justify-center">
-                 <ThemeToggle />
-            </div>
       </aside>
 
-      {/* Tombol menu mobile */}
+      {/* Tombol Mobile */}
       <button
-        className="md:hidden fixed top-4 left-4 z-50 bg-[#0d6efd] text-white p-2 rounded-md shadow-lg"
         onClick={() => setSidebarOpen(true)}
+        className="md:hidden fixed top-4 left-4 z-50 bg-blue-600 text-white p-2 rounded-md shadow-lg hover:bg-blue-700 transition"
       >
         <Menu size={18} />
       </button>
+
+      {/* Animasi */}
+      <style jsx global>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-5px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.2s ease-in-out;
+        }
+      `}</style>
     </>
-    
   );
 }

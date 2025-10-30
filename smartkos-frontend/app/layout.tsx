@@ -1,9 +1,11 @@
 import './globals.css';
-import { Providers } from './providers';
+import type { Metadata } from 'next';
+import Sidebar from '@/components/layout/sidebar';
+import Topbar from '@/components/layout/topbar';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'SmartKos Dashboard',
-  description: 'Manajemen Kos Modern',
+  description: 'Sistem Manajemen Kos Modern',
 };
 
 export default function RootLayout({
@@ -12,9 +14,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" suppressHydrationWarning>
-      <body className="bg-gray-50 text-gray-900 dark:bg-[#1e1f24] dark:text-gray-100">
-        <Providers>{children}</Providers>
+    <html lang="id">
+      <body className="bg-[#f8fafc] text-slate-800 flex min-h-screen">
+        {/* Sidebar */}
+        <Sidebar />
+
+        {/* Konten utama */}
+        <div className="flex-1 flex flex-col">
+          {/* Topbar */}
+          <Topbar />
+
+          {/* Isi konten */}
+          <main className="flex-1 overflow-y-auto p-6 md:p-8 bg-[#f8fafc]">
+            {children}
+          </main>
+        </div>
       </body>
     </html>
   );
