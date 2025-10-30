@@ -1,66 +1,123 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   Home,
   Calendar,
   ClipboardList,
-  CreditCard,
+  FileText,
   Layers,
+  CreditCard,
+  Users,
   Settings,
-  Menu,
   ChevronDown,
-  ChevronUp,
+  ChevronRight,
+  Menu,
 } from 'lucide-react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 
 export default function Sidebar() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedKos, setSelectedKos] = useState('SmartKos 1');
-
-  // Ambil pathname dari Next.js (aman untuk SSR)
   const pathname = usePathname();
 
+  // --- Dropdown SmartKos ---
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedKos, setSelectedKos] = useState('SmartKos 1');
   const kosList = ['SmartKos 1', 'SmartKos 2', 'SmartKos 3'];
 
+  // --- State submenu ---
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+
+  const toggleMenu = (menu: string) => {
+    setOpenMenu(openMenu === menu ? null : menu);
+  };
+
+  // --- Menu Struktur ---
   const menuItems = [
-    { href: '/', label: 'Dashboard', icon: <Home className="w-4 h-4" /> },
-    { href: '/kalender', label: 'Kalender', icon: <Calendar className="w-4 h-4" /> },
-    { href: '/penyewaan', label: 'Penyewaan', icon: <ClipboardList className="w-4 h-4" /> },
-    { href: '/pembayaran', label: 'Pembayaran', icon: <CreditCard className="w-4 h-4" /> },
-    { href: '/master', label: 'Master Data', icon: <Layers className="w-4 h-4" /> },
-    { href: '/pengaturan', label: 'Pengaturan', icon: <Settings className="w-4 h-4" /> },
+    {
+      label: 'Dashboard',
+      icon: <Home size={18} />,
+      href: '/',
+    },
+    {
+      label: 'Kalender',
+      icon: <Calendar size={18} />,
+      href: '/ketersediaan',
+    },
+    {
+      label: 'Penyewaan',
+      icon: <ClipboardList size={18} />,
+      children: [
+        { label: 'Sewa Aktif', href: '/penyewaan/sewa-aktif' },
+        { label: 'Buat Kontrak', href: '/penyewaan/kontrak-baru' },
+        { label: 'Riwayat Penyewa', href: '/penyewaan/riwayat' },
+      ],
+    },
+    {
+      label: 'Keuangan',
+      icon: <CreditCard size={18} />,
+      children: [
+        { label: 'Tagihan (Invoice)', href: '/keuangan/tagihan' },
+        { label: 'Riwayat Transaksi', href: '/keuangan/riwayat' },
+        { label: 'Laporan Keuangan', href: '/keuangan/laporan' },
+      ],
+    },
+    {
+      label: 'Administrasi',
+      icon: <Layers size={18} />,
+      children: [
+        { label: 'Data Properti', href: '/admin/data-properti' },
+        { label: 'Tarif & Promo', href: '/admin/tarif-promo' },
+      ],
+    },
+    {
+      label: 'Pengaturan Akun',
+      icon: <Settings size={18} />,
+      children: [
+        { label: 'Manajemen Pengguna', href: '/pengaturan/pengguna' },
+        { label: 'Sistem', href: '/pengaturan/sistem' },
+      ],
+    },
   ];
+
+  // --- Mobile Sidebar toggle ---
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <>
+      {/* Overlay untuk mobile */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/30 z-40 md:hidden"
           onClick={() => setSidebarOpen(false)}
-        ></div>
+        />
       )}
 
+      {/* Sidebar */}
       <aside
-        className={`fixed md:static z-50 inset-y-0 left-0 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out shadow-lg md:shadow-none ${
+        className={`fixed md:static z-50 inset-y-0 left-0 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >
-        {/* Header Dropdown */}
-        <div className="px-6 py-4 border-b border-gray-100 relative">
-          <button
+        {/* Header Sidebar */}
+        <div className="relative px-6 py-4 border-b border-gray-100">
+          <div
+            className="flex items-center justify-between cursor-pointer select-none"
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="w-full flex items-center justify-between text-lg font-bold text-blue-600 hover:text-blue-700 transition"
           >
-            {selectedKos}
+            <div>
+              <h1 className="text-lg font-semibold text-gray-800">
+                {selectedKos}
+              </h1>
+              <p className="text-xs text-gray-500">Manajemen Kos</p>
+            </div>
             {dropdownOpen ? (
-              <ChevronUp className="w-4 h-4 text-gray-600" />
+              <ChevronDown className="w-4 h-4 text-gray-500" />
             ) : (
-              <ChevronDown className="w-4 h-4 text-gray-600" />
+              <ChevronRight className="w-4 h-4 text-gray-500" />
             )}
-          </button>
+          </div>
 
+          {/* Dropdown daftar kos */}
           {dropdownOpen && (
             <div className="absolute left-6 right-6 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 animate-fadeIn">
               {kosList.map((kos) => (
@@ -84,37 +141,78 @@ export default function Sidebar() {
         </div>
 
         {/* Menu Navigasi */}
-        <nav className="p-4 space-y-1">
+        <nav className="p-4 space-y-1 text-sm">
           {menuItems.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive =
+              item.href === pathname ||
+              item.children?.some((child) => child.href === pathname);
+
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm transition-all ${
-                  isActive
-                    ? 'bg-blue-100 text-blue-700 font-semibold'
-                    : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
-                }`}
-              >
-                <span className="text-blue-500">{item.icon}</span>
-                {item.label}
-              </Link>
+              <div key={item.label}>
+                {/* Item utama */}
+                <button
+                  onClick={() =>
+                    item.children ? toggleMenu(item.label) : null
+                  }
+                  className={`flex items-center justify-between w-full px-4 py-2 rounded-lg transition-all ${
+                    isActive
+                      ? 'bg-blue-50 text-blue-600 font-semibold'
+                      : 'text-gray-700 hover:bg-gray-50 hover:text-blue-600'
+                  }`}
+                >
+                  <span className="flex items-center gap-3">
+                    <span className="text-blue-500">{item.icon}</span>
+                    {item.children ? (
+                      <span>{item.label}</span>
+                    ) : (
+                      <Link href={item.href || '#'}>{item.label}</Link>
+                    )}
+                  </span>
+                  {item.children &&
+                    (openMenu === item.label ? (
+                      <ChevronDown className="w-4 h-4" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4" />
+                    ))}
+                </button>
+
+                {/* Submenu */}
+                {item.children && openMenu === item.label && (
+                  <div className="ml-6 mt-1 space-y-1 animate-fadeIn">
+                    {item.children.map((sub) => {
+                      const isSubActive = sub.href === pathname;
+                      return (
+                        <Link
+                          key={sub.label}
+                          href={sub.href}
+                          className={`block px-3 py-2 text-sm rounded-md transition-colors ${
+                            isSubActive
+                              ? 'bg-blue-100 text-blue-700 font-medium'
+                              : 'text-gray-600 hover:bg-gray-50 hover:text-blue-600'
+                          }`}
+                        >
+                          {sub.label}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             );
           })}
         </nav>
       </aside>
 
-      {/* Tombol Mobile */}
+      {/* Tombol Toggle Mobile */}
       <button
         onClick={() => setSidebarOpen(true)}
-        className="md:hidden fixed top-4 left-4 z-50 bg-blue-600 text-white p-2 rounded-md shadow-lg hover:bg-blue-700 transition"
+        className="md:hidden fixed top-4 left-4 z-50 bg-blue-600 text-white p-2 rounded-md shadow-lg"
       >
         <Menu size={18} />
       </button>
 
-      {/* Animasi */}
-      <style jsx global>{`
+      {/* Animasi CSS tambahan */}
+      <style jsx>{`
         @keyframes fadeIn {
           from {
             opacity: 0;
@@ -126,7 +224,7 @@ export default function Sidebar() {
           }
         }
         .animate-fadeIn {
-          animation: fadeIn 0.2s ease-in-out;
+          animation: fadeIn 0.2s ease-out forwards;
         }
       `}</style>
     </>

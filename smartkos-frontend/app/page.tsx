@@ -54,7 +54,7 @@ const DUMMY_DATA: DashboardData = {
   tersedia: 56,
   penghuniAktif: 83,
   pendapatanBulanIni: 12950000,
-  userName: 'Dimas',
+  userName: 'Saddam Muhammad',
   pendapatanHistory: [
     { month: 'Jan', amount: 3000000 },
     { month: 'Feb', amount: 4500000 },
