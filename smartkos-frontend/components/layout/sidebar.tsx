@@ -47,9 +47,10 @@ export default function Sidebar() {
       label: 'Penyewaan',
       icon: <ClipboardList size={18} />,
       children: [
-        { label: 'Sewa Aktif', href: '/penyewaan/sewa-aktif' },
-        { label: 'Buat Kontrak', href: '/penyewaan/kontrak-baru' },
-        { label: 'Riwayat Penyewa', href: '/penyewaan/riwayat' },
+        { label: 'Daftar Sewa Aktif', href: '/penyewaan/daftar-sewa-aktif' },       // ← sesuai folder app/penyewaan/aktif/page.tsx
+        { label: 'Daftar Kamar Tersedia', href: '/penyewaan/kamar-tersedia' },    
+        { label: 'Buat Kontrak', href: '/penyewaan/kontrak-baru' }, // jika nanti kamu buat folder app/penyewaan/kontrak-baru/page.tsx
+        { label: 'Riwayat Penyewa', href: '/penyewaan/riwayat' },   // jika nanti kamu buat app/penyewaan/riwayat/page.tsx
       ],
     },
     {
