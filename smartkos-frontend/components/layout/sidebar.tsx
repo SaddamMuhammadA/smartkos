@@ -41,7 +41,7 @@ export default function Sidebar() {
     {
       label: 'Kalender',
       icon: <Calendar size={18} />,
-      href: '/ketersediaan',
+      href: '/kalender',
     },
     {
       label: 'Penyewaan',
