@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import jsPDF from 'jspdf';
 import RingkasanKontrak from './components/RingkasanKontrak';
 import ModalPilihCustomer from './components/ModalPilihCustomer';
+import ModalPreviewKontrak from './components/ModalPreviewKontrak';
 
 
 interface Option {
@@ -305,6 +306,19 @@ const handleAddCustomer = (nama: string, telp: string, fotoKtp?: string) => {
         handleSelectCustomer={handleSelectCustomer}
         handleAddCustomer={handleAddCustomer}
       />
+
+      <ModalPreviewKontrak
+        show={showPreview}
+        onClose={() => setShowPreview(false)}
+        form={form}
+        hitungDurasi={hitungDurasi}
+        totalSewa={totalSewa}
+        parkirHarga={parkirHarga}
+        totalKeseluruhan={totalKeseluruhan}
+        handleConfirm={handleConfirm}
+        handleDownloadPDF={handleDownloadPDF}
+      />
+
     </div>
   );
 }
