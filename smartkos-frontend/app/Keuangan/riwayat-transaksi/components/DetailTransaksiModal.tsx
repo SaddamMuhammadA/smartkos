@@ -38,7 +38,7 @@ export default function DetailTransaksiModal({
         >
           {/* On mobile, modal is fullscreen; on desktop centered box */}
           <motion.div
-            className="bg-white w-full h-full md:h-auto md:max-w-2xl md:rounded-xl shadow-xl overflow-y-auto"
+            className="bg-white w-full h-full md:h-auto md:max-w-2xl md:rounded-xl shadow-xl overflow-y-auto max-h-screen"
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 50, opacity: 0 }}

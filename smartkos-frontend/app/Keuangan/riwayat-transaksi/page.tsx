@@ -52,8 +52,8 @@ export default function RiwayatTransaksiPage() {
   };
 
   return (
-    <div className="p-6 bg-[#f8fafc] min-h-screen text-slate-800">
-      <div className="mb-6 flex items-start justify-between gap-3">
+    <div className="p-4 md:p-6 bg-[#f8fafc] min-h-screen text-slate-800">
+      <div className="mb-6 flex flex-col md:flex-row md:items-start md:justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold mb-1">Riwayat Transaksi</h1>
           <p className="text-sm text-gray-500">
@@ -61,8 +61,8 @@ export default function RiwayatTransaksiPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button onClick={handleExportPDF} className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex items-center gap-2 text-sm">
+       <div className="flex items-center md:justify-end gap-2 w-full md:w-auto">
+          <button className="w-full md:w-auto px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex items-center justify-center gap-2 text-sm">
             <Printer size={14} /> Export PDF
           </button>
         </div>

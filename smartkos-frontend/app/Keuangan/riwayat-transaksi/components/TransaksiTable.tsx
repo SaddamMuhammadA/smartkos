@@ -85,7 +85,7 @@ export default function TransaksiTable({
       {/* Mobile cards */}
       <div className="md:hidden space-y-3">
         {data.map((t) => (
-          <div key={t.id} className="bg-white border rounded-xl shadow-sm p-4">
+          <div key={t.id} className="bg-white border rounded-xl shadow-sm p-4 active:scale-[0.995] transition">
             <div className="flex items-start justify-between">
               <div>
                 <div className="text-sm text-gray-500">{t.trxNo}</div>
@@ -100,7 +100,7 @@ export default function TransaksiTable({
               </div>
             </div>
 
-            <div className="flex items-center justify-between mt-3">
+            <div className="flex items-center justify-between mt-4">
               <div className="text-xs text-gray-500">{t.tanggal}</div>
               <button
                 onClick={() => onDetail(t)}

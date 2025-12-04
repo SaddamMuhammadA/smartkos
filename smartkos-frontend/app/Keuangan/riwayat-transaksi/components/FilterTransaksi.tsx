@@ -24,7 +24,7 @@ export default function FilterTransaksi({
   setStatus: (v: string) => void;
 }) {
   return (
-    <div className="flex flex-col md:flex-row md:items-center md:gap-3 mb-5">
+    <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-3 mb-5">
       <div className="flex items-center gap-2 w-full md:w-auto">
         <div className="relative w-full md:w-72">
           <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
@@ -38,7 +38,7 @@ export default function FilterTransaksi({
         </div>
       </div>
 
-      <div className="flex items-center gap-2 mt-3 md:mt-0">
+     <div className="grid grid-cols-2 gap-2 md:flex md:items-center md:gap-2 mt-1">
         <input
           type="date"
           value={from}
