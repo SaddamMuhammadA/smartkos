@@ -58,9 +58,9 @@ export default function Sidebar() {
       label: 'Keuangan',
       icon: <CreditCard size={18} />,
       children: [
-        { label: 'Tagihan (Invoice)', href: '/keuangan/tagihan' },
-        { label: 'Riwayat Transaksi', href: '/keuangan/riwayat' },
-        { label: 'Laporan Keuangan', href: '/keuangan/laporan' },
+        { label: 'Tagihan (Invoice)', href: '/Keuangan/tagihan' },
+        { label: 'Riwayat Transaksi', href: '/Keuangan/riwayat-transaksi' },
+        { label: 'Laporan Keuangan', href: '/Keuangan/laporan' },
       ],
     },
     {
