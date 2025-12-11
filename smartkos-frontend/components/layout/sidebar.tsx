@@ -64,11 +64,15 @@ export default function Sidebar() {
       ],
     },
     {
-      label: 'Administrasi',
+      label: 'Data Master',
       icon: <Layers size={18} />,
       children: [
-        { label: 'Data Properti', href: '/admin/data-properti' },
-        { label: 'Tarif & Promo', href: '/admin/tarif-promo' },
+        { label: 'Master Kos', href: '/datamaster/master-kos' },
+        { label: 'Data Jenis Kamar', href: '/datamaster/data-jenis-kamar' },
+        { label: 'Data Kamar', href: '/datamaster/data-kamar' },
+        { label: 'Data Parkir', href: '/datamaster/data-parkir' },
+        { label: 'Data Harga', href: '/datamaster/data-harga' },
+        { label: 'Data Promo', href: '/datamaster/data-promo' },
       ],
     },
     {
