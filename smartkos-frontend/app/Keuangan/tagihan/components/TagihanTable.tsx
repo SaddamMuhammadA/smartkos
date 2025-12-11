@@ -7,10 +7,12 @@ export default function TagihanTable({
   data,
   onDetail,
   onPrint,
+  onTagih,
 }: {
   data: Tagihan[];
   onDetail: (t: Tagihan) => void;
   onPrint: (t: Tagihan) => void;
+  onTagih?: (t: Tagihan) => void;
 }) {
   const badge = {
     "Belum Lunas": "bg-red-100 text-red-700",
@@ -57,6 +59,7 @@ export default function TagihanTable({
                   <button
                     onClick={() => onDetail(t)}
                     className="px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                    aria-label={`Detail ${t.invoiceNo}`}
                   >
                     <Eye size={14} />
                   </button>
@@ -64,9 +67,20 @@ export default function TagihanTable({
                   <button
                     onClick={() => onPrint(t)}
                     className="px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                    aria-label={`Cetak ${t.invoiceNo}`}
                   >
                     <Printer size={14} />
                   </button>
+
+                  {t.status === "Belum Lunas" && onTagih && (
+                    <button
+                      onClick={() => onTagih(t)}
+                      className="px-2 py-1 bg-amber-100 text-amber-800 rounded hover:bg-amber-200"
+                      aria-label={`Tagih ${t.invoiceNo}`}
+                    >
+                      Tagih
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
@@ -105,12 +119,22 @@ export default function TagihanTable({
               >
                 Detail
               </button>
+
               <button
                 onClick={() => onPrint(t)}
                 className="flex-1 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg"
               >
                 Cetak
               </button>
+
+              {t.status === "Belum Lunas" && onTagih && (
+                <button
+                  onClick={() => onTagih(t)}
+                  className="flex-1 py-2 text-sm bg-amber-100 text-amber-800 rounded-lg"
+                >
+                  Tagih
+                </button>
+              )}
             </div>
           </div>
         ))}

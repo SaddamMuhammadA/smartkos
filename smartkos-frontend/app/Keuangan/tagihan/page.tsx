@@ -4,6 +4,7 @@ import React, { useMemo, useState } from "react";
 import FilterTagihan from "./components/FilterTagihan";
 import TagihanTable from "./components/TagihanTable";
 import DetailTagihanModal from "./components/DetailTagihanModal";
+import KirimTagihanModal from "./components/KirimTagihanModal";
 import { tagihanDummy, Tagihan } from "./data/dummyTagihan";
 import { Printer } from "lucide-react";
 import jsPDF from "jspdf";
@@ -14,27 +15,41 @@ export default function TagihanPage() {
   const [status, setStatus] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
+
   const [selected, setSelected] = useState<Tagihan | null>(null);
   const [showDetail, setShowDetail] = useState(false);
 
+  // Untuk modal Tagih
+  const [selectedToTagih, setSelectedToTagih] = useState<Tagihan | null>(null);
+  const [showTagihModal, setShowTagihModal] = useState(false);
+
+  // -----------------------------
   // Filtering
+  // -----------------------------
   const filtered = useMemo(() => {
     return list.filter((t) => {
       const q = search.trim().toLowerCase();
+
       const matchQ =
         !q ||
         t.customer.toLowerCase().includes(q) ||
         t.invoiceNo.toLowerCase().includes(q) ||
         t.kamar.toLowerCase().includes(q);
 
+      const start = t.periodeStart;
+      const end = t.periodeEnd;
+
       const matchStatus = !status || t.status === status;
-      const matchFrom = !from || t.periodeStart >= from;
-      const matchTo = !to || t.periodeEnd <= to;
+      const matchFrom = !from || start >= from;
+      const matchTo = !to || end <= to;
 
       return matchQ && matchStatus && matchFrom && matchTo;
     });
   }, [list, search, status, from, to]);
 
+  // -----------------------------
+  // Detail Modal
+  // -----------------------------
   const openDetail = (t: Tagihan) => {
     setSelected(t);
     setShowDetail(true);
@@ -48,16 +63,15 @@ export default function TagihanPage() {
     setList((prev) =>
       prev.map((item) =>
         item.id === id
-          ? {
-              ...item,
-              status,
-              buktiBayar: bukti ?? item.buktiBayar,
-            }
+          ? { ...item, status, buktiBayar: bukti ?? item.buktiBayar }
           : item
       )
     );
   };
 
+  // -----------------------------
+  // Print
+  // -----------------------------
   const handlePrint = (t: Tagihan) => {
     const doc = new jsPDF();
     doc.text("INVOICE", 15, 20);
@@ -68,6 +82,20 @@ export default function TagihanPage() {
     doc.save(`${t.invoiceNo}.pdf`);
   };
 
+  // -----------------------------
+  // Kirim Tagihan
+  // -----------------------------
+  const handleOpenTagih = (t: Tagihan) => {
+    setSelectedToTagih(t);
+    setShowTagihModal(true);
+  };
+
+  // nanti diganti dari database
+  const adminAccountFromDB = "";
+
+  // -----------------------------
+  // Render
+  // -----------------------------
   return (
     <div className="p-6 bg-[#f8fafc] min-h-screen text-slate-800">
       <div className="mb-6">
@@ -88,16 +116,19 @@ export default function TagihanPage() {
         setTo={setTo}
       />
 
+      {/* Summary */}
       <div className="mb-4 flex items-center justify-between gap-3">
         <div className="flex gap-3">
           <div className="bg-white border rounded-lg px-4 py-2 text-sm shadow-sm text-gray-700">
             Total Tagihan: <b>{list.length}</b>
           </div>
           <div className="bg-white border rounded-lg px-4 py-2 text-sm shadow-sm text-gray-700">
-            Belum Lunas: <b>{list.filter((l) => l.status === "Belum Lunas").length}</b>
+            Belum Lunas:{" "}
+            <b>{list.filter((l) => l.status === "Belum Lunas").length}</b>
           </div>
         </div>
 
+        {/* Export PDF */}
         <button
           onClick={() => {
             const doc = new jsPDF();
@@ -110,13 +141,31 @@ export default function TagihanPage() {
         </button>
       </div>
 
-      <TagihanTable data={filtered} onDetail={openDetail} onPrint={handlePrint} />
+      {/* Table */}
+      <TagihanTable
+        data={filtered}
+        onDetail={openDetail}
+        onPrint={handlePrint}
+        onTagih={handleOpenTagih}
+      />
 
+      {/* Detail Modal */}
       <DetailTagihanModal
         show={showDetail}
         onClose={() => setShowDetail(false)}
         data={selected}
         onUpdateStatus={handleUpdateStatus}
+      />
+
+      {/* Kirim Tagihan Modal */}
+      <KirimTagihanModal
+        show={showTagihModal}
+        onClose={() => {
+          setShowTagihModal(false);
+          setSelectedToTagih(null);
+        }}
+        data={selectedToTagih}
+        adminAccount={adminAccountFromDB || undefined}
       />
     </div>
   );
