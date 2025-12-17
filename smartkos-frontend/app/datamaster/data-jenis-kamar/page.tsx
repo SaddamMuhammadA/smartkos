@@ -4,57 +4,91 @@ import { useState } from 'react';
 import { PlusCircle, Edit, Trash2, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-interface Kamar {
-  id_kamar: number;
-  id_kos: number | null;
-  id_jenis_kamar: number | null;
-  kode_kamar: string;
-  status_kamar: 'Tersedia' | 'Terisi' | 'Perawatan';
-  catatan?: string;
+interface MasterKos {
+  id_kos: number;
+  nama_kos: string;
 }
 
-export default function DataKamarPage() {
-  const [data, setData] = useState<Kamar[]>([
+interface JenisKamar {
+  id_jenis_kamar: number;
+  id_kos: number | null;
+  nama_jenis_kamar: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Data Master Kos (nanti bisa dari API)
+const masterKosData: MasterKos[] = [
+  { id_kos: 1, nama_kos: 'SmartKos 1' },
+  { id_kos: 2, nama_kos: 'SmartKos 2' },
+  { id_kos: 3, nama_kos: 'SmartKos 3' },
+];
+
+export default function DataJenisKamarPage() {
+  const [data, setData] = useState<JenisKamar[]>([
     {
-      id_kamar: 1,
+      id_jenis_kamar: 1,
       id_kos: 1,
-      id_jenis_kamar: 2,
-      kode_kamar: 'A01',
-      status_kamar: 'Tersedia',
-      catatan: 'Dekat jendela',
+      nama_jenis_kamar: 'Deluxe',
+      created_at: '2024-01-15 10:00:00',
+      updated_at: '2024-01-15 10:00:00',
     },
     {
-      id_kamar: 2,
+      id_jenis_kamar: 2,
       id_kos: 1,
-      id_jenis_kamar: 1,
-      kode_kamar: 'B12',
-      status_kamar: 'Terisi',
-      catatan: '',
+      nama_jenis_kamar: 'Standard',
+      created_at: '2024-01-15 10:30:00',
+      updated_at: '2024-01-15 10:30:00',
+    },
+    {
+      id_jenis_kamar: 3,
+      id_kos: 1,
+      nama_jenis_kamar: 'VIP',
+      created_at: '2024-01-16 09:00:00',
+      updated_at: '2024-01-16 09:00:00',
+    },
+        {
+      id_jenis_kamar: 4,
+      id_kos: 2,
+      nama_jenis_kamar: 'Deluxe',
+      created_at: '2024-01-15 10:00:00',
+      updated_at: '2024-01-15 10:00:00',
+    },
+    {
+      id_jenis_kamar: 5,
+      id_kos: 2,
+      nama_jenis_kamar: 'Standard',
+      created_at: '2024-01-15 10:30:00',
+      updated_at: '2024-01-15 10:30:00',
+    },
+    {
+      id_jenis_kamar: 6,
+      id_kos: 2,
+      nama_jenis_kamar: 'VIP',
+      created_at: '2024-01-16 09:00:00',
+      updated_at: '2024-01-16 09:00:00',
     },
   ]);
 
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [editingKamar, setEditingKamar] = useState<Kamar | null>(null);
+  const [editingJenisKamar, setEditingJenisKamar] = useState<JenisKamar | null>(null);
   const [form, setForm] = useState({
-    kode_kamar: '',
+    nama_jenis_kamar: '',
     id_kos: '',
-    id_jenis_kamar: '',
-    status_kamar: 'Tersedia' as 'Tersedia' | 'Terisi' | 'Perawatan',
-    catatan: '',
   });
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedKamar, setSelectedKamar] = useState<{
+  const [selectedJenisKamar, setSelectedJenisKamar] = useState<{
     id: number;
-    kode: string;
+    nama: string;
   } | null>(null);
 
   const filteredData = data.filter((item) =>
-    item.kode_kamar.toLowerCase().includes(search.toLowerCase())
+    item.nama_jenis_kamar.toLowerCase().includes(search.toLowerCase())
   );
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
@@ -62,69 +96,69 @@ export default function DataKamarPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingKamar) {
+    
+    const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    
+    if (editingJenisKamar) {
       // Update
       setData((prev) =>
-        prev.map((k) =>
-          k.id_kamar === editingKamar.id_kamar
+        prev.map((item) =>
+          item.id_jenis_kamar === editingJenisKamar.id_jenis_kamar
             ? {
-                ...k,
-                kode_kamar: form.kode_kamar,
+                ...item,
+                nama_jenis_kamar: form.nama_jenis_kamar,
                 id_kos: form.id_kos ? Number(form.id_kos) : null,
-                id_jenis_kamar: form.id_jenis_kamar ? Number(form.id_jenis_kamar) : null,
-                status_kamar: form.status_kamar,
-                catatan: form.catatan,
+                updated_at: now,
               }
-            : k
+            : item
         )
       );
     } else {
       // Tambah baru
-      const newKamar: Kamar = {
-        id_kamar: Date.now(),
-        kode_kamar: form.kode_kamar,
+      const newJenisKamar: JenisKamar = {
+        id_jenis_kamar: Date.now(),
+        nama_jenis_kamar: form.nama_jenis_kamar,
         id_kos: form.id_kos ? Number(form.id_kos) : null,
-        id_jenis_kamar: form.id_jenis_kamar ? Number(form.id_jenis_kamar) : null,
-        status_kamar: form.status_kamar,
-        catatan: form.catatan,
+        created_at: now,
+        updated_at: now,
       };
-      setData([...data, newKamar]);
+      setData([...data, newJenisKamar]);
     }
 
     setShowModal(false);
-    setEditingKamar(null);
+    setEditingJenisKamar(null);
     setForm({
-      kode_kamar: '',
+      nama_jenis_kamar: '',
       id_kos: '',
-      id_jenis_kamar: '',
-      status_kamar: 'Tersedia',
-      catatan: '',
     });
   };
 
-  const handleEdit = (item: Kamar) => {
-    setEditingKamar(item);
+  const handleEdit = (item: JenisKamar) => {
+    setEditingJenisKamar(item);
     setForm({
-      kode_kamar: item.kode_kamar,
+      nama_jenis_kamar: item.nama_jenis_kamar,
       id_kos: item.id_kos?.toString() || '',
-      id_jenis_kamar: item.id_jenis_kamar?.toString() || '',
-      status_kamar: item.status_kamar,
-      catatan: item.catatan || '',
     });
     setShowModal(true);
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Tersedia':
-        return 'bg-green-100 text-green-700';
-      case 'Terisi':
-        return 'bg-red-100 text-red-700';
-      case 'Perawatan':
-        return 'bg-yellow-100 text-yellow-700';
-      default:
-        return 'bg-gray-100 text-gray-700';
-    }
+  const formatDateTime = (dateString?: string) => {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleString('id-ID', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  // Helper untuk mendapatkan nama kos berdasarkan id_kos
+  const getNamaKos = (id_kos: number | null) => {
+    if (!id_kos) return '-';
+    const kos = masterKosData.find((item) => item.id_kos === id_kos);
+    return kos ? kos.nama_kos : '-';
   };
 
   return (
@@ -132,9 +166,9 @@ export default function DataKamarPage() {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold mb-1">Data Kamar</h1>
+          <h1 className="text-xl sm:text-2xl font-bold mb-1">Data Jenis Kamar</h1>
           <p className="text-sm text-gray-500">
-            Kelola data kamar kos yang tersedia di sistem SmartKos.
+            Kelola jenis/tipe kamar yang tersedia di sistem SmartKos.
           </p>
         </div>
 
@@ -142,7 +176,7 @@ export default function DataKamarPage() {
           onClick={() => setShowModal(true)}
           className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition w-full md:w-auto"
         >
-          <PlusCircle size={18} /> Tambah Kamar
+          <PlusCircle size={18} /> Tambah Jenis Kamar
         </button>
       </div>
 
@@ -154,7 +188,7 @@ export default function DataKamarPage() {
         />
         <input
           type="text"
-          placeholder="Cari kode kamar..."
+          placeholder="Cari nama jenis kamar..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full border border-gray-300 rounded-lg pl-9 pr-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -165,38 +199,36 @@ export default function DataKamarPage() {
       <div className="block lg:hidden space-y-3">
         {filteredData.map((item) => (
           <div
-            key={item.id_kamar}
+            key={item.id_jenis_kamar}
             className="bg-white border border-gray-200 rounded-xl shadow-sm p-4"
           >
             <div className="flex justify-between items-start mb-3">
               <div>
-                <h3 className="font-bold text-lg">{item.kode_kamar}</h3>
-                <p className="text-xs text-gray-500">ID: {item.id_kamar}</p>
+                <h3 className="font-bold text-lg">{item.nama_jenis_kamar}</h3>
+                <p className="text-xs text-gray-500">ID: {item.id_jenis_kamar}</p>
               </div>
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
-                  item.status_kamar
-                )}`}
-              >
-                {item.status_kamar}
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                Jenis Kamar
               </span>
             </div>
 
             <div className="space-y-2 mb-4">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Properti:</span>
-                <span className="font-medium">{item.id_kos || '-'}</span>
+                <span className="text-gray-600">Nama Kos:</span>
+                <span className="font-medium">{getNamaKos(item.id_kos)}</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Jenis Kamar:</span>
-                <span className="font-medium">{item.id_jenis_kamar || '-'}</span>
+              <div className="text-sm pt-2 border-t">
+                <span className="text-gray-600">Dibuat:</span>
+                <p className="text-gray-800 text-xs mt-1">
+                  {formatDateTime(item.created_at)}
+                </p>
               </div>
-              {item.catatan && (
-                <div className="text-sm pt-2 border-t">
-                  <span className="text-gray-600">Catatan:</span>
-                  <p className="text-gray-800 mt-1">{item.catatan}</p>
-                </div>
-              )}
+              <div className="text-sm">
+                <span className="text-gray-600">Terakhir Update:</span>
+                <p className="text-gray-800 text-xs mt-1">
+                  {formatDateTime(item.updated_at)}
+                </p>
+              </div>
             </div>
 
             <div className="flex gap-2">
@@ -209,9 +241,9 @@ export default function DataKamarPage() {
               </button>
               <button
                 onClick={() => {
-                  setSelectedKamar({
-                    id: item.id_kamar,
-                    kode: item.kode_kamar,
+                  setSelectedJenisKamar({
+                    id: item.id_jenis_kamar,
+                    nama: item.nama_jenis_kamar,
                   });
                   setShowDeleteModal(true);
                 }}
@@ -225,7 +257,7 @@ export default function DataKamarPage() {
         ))}
         {filteredData.length === 0 && (
           <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 text-center text-gray-400 italic">
-            Tidak ada data kamar
+            Tidak ada data jenis kamar
           </div>
         )}
       </div>
@@ -236,30 +268,26 @@ export default function DataKamarPage() {
           <table className="min-w-full text-sm text-gray-700">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-4 py-3 text-left font-medium">Kode Kamar</th>
-                <th className="px-4 py-3 text-left font-medium">Properti (ID Kos)</th>
-                <th className="px-4 py-3 text-left font-medium">Jenis Kamar</th>
-                <th className="px-4 py-3 text-left font-medium">Status</th>
-                <th className="px-4 py-3 text-left font-medium">Catatan</th>
+                <th className="px-4 py-3 text-left font-medium">ID</th>
+                <th className="px-4 py-3 text-left font-medium">Nama Jenis Kamar</th>
+                <th className="px-4 py-3 text-left font-medium">Nama Kos</th>
+                <th className="px-4 py-3 text-left font-medium">Dibuat</th>
+                <th className="px-4 py-3 text-left font-medium">Terakhir Update</th>
                 <th className="px-4 py-3 text-center font-medium">Aksi</th>
               </tr>
             </thead>
             <tbody>
               {filteredData.map((item) => (
-                <tr key={item.id_kamar} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium">{item.kode_kamar}</td>
-                  <td className="px-4 py-3">{item.id_kos || '-'}</td>
-                  <td className="px-4 py-3">{item.id_jenis_kamar || '-'}</td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`px-2 py-1 rounded-md text-xs font-medium ${getStatusColor(
-                        item.status_kamar
-                      )}`}
-                    >
-                      {item.status_kamar}
-                    </span>
+                <tr key={item.id_jenis_kamar} className="border-b hover:bg-gray-50">
+                  <td className="px-4 py-3">{item.id_jenis_kamar}</td>
+                  <td className="px-4 py-3 font-medium">{item.nama_jenis_kamar}</td>
+                  <td className="px-4 py-3">{getNamaKos(item.id_kos)}</td>
+                  <td className="px-4 py-3 text-xs text-gray-600">
+                    {formatDateTime(item.created_at)}
                   </td>
-                  <td className="px-4 py-3">{item.catatan || '-'}</td>
+                  <td className="px-4 py-3 text-xs text-gray-600">
+                    {formatDateTime(item.updated_at)}
+                  </td>
                   <td className="px-4 py-3 text-center flex justify-center gap-2">
                     <button
                       onClick={() => handleEdit(item)}
@@ -270,9 +298,9 @@ export default function DataKamarPage() {
 
                     <button
                       onClick={() => {
-                        setSelectedKamar({
-                          id: item.id_kamar,
-                          kode: item.kode_kamar,
+                        setSelectedJenisKamar({
+                          id: item.id_jenis_kamar,
+                          nama: item.nama_jenis_kamar,
                         });
                         setShowDeleteModal(true);
                       }}
@@ -289,7 +317,7 @@ export default function DataKamarPage() {
                     colSpan={6}
                     className="px-4 py-6 text-center text-gray-400 italic"
                   >
-                    Tidak ada data kamar
+                    Tidak ada data jenis kamar
                   </td>
                 </tr>
               )}
@@ -298,7 +326,7 @@ export default function DataKamarPage() {
         </div>
       </div>
 
-      {/* === MODAL TAMBAH / EDIT KAMAR === */}
+      {/* === MODAL TAMBAH / EDIT JENIS KAMAR === */}
       <AnimatePresence>
         {showModal && (
           <motion.div
@@ -314,77 +342,46 @@ export default function DataKamarPage() {
               exit={{ scale: 0.9 }}
             >
               <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                {editingKamar ? 'Edit Kamar' : 'Tambah Kamar Baru'}
+                {editingJenisKamar ? 'Edit Jenis Kamar' : 'Tambah Jenis Kamar Baru'}
               </h3>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="text-sm font-medium text-gray-700">
-                    Kode Kamar
+                    Nama Jenis Kamar
                   </label>
                   <input
                     type="text"
-                    name="kode_kamar"
-                    value={form.kode_kamar}
+                    name="nama_jenis_kamar"
+                    value={form.nama_jenis_kamar}
                     onChange={handleChange}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none mt-1"
+                    placeholder="Contoh: Deluxe, Standard, VIP"
                     required
                   />
                 </div>
 
                 <div>
                   <label className="text-sm font-medium text-gray-700">
-                    ID Kos (Properti)
+                    Nama Kos
                   </label>
-                  <input
-                    type="number"
+                  <select
                     name="id_kos"
                     value={form.id_kos}
                     onChange={handleChange}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none mt-1"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    ID Jenis Kamar
-                  </label>
-                  <input
-                    type="number"
-                    name="id_jenis_kamar"
-                    value={form.id_jenis_kamar}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none mt-1"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    Status Kamar
-                  </label>
-                  <select
-                    name="status_kamar"
-                    value={form.status_kamar}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none mt-1"
+                    required
                   >
-                    <option value="Tersedia">Tersedia</option>
-                    <option value="Terisi">Terisi</option>
-                    <option value="Perawatan">Perawatan</option>
+                    <option value="">-- Pilih Nama Kos --</option>
+                    {masterKosData.map((kos) => (
+                      <option key={kos.id_kos} value={kos.id_kos}>
+                        {kos.nama_kos}
+                      </option>
+                    ))}
                   </select>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    Catatan (opsional)
-                  </label>
-                  <textarea
-                    name="catatan"
-                    value={form.catatan}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none mt-1"
-                    rows={3}
-                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Pilih properti kos tempat jenis kamar ini tersedia
+                  </p>
                 </div>
 
                 <div className="flex gap-2 mt-5">
@@ -392,13 +389,10 @@ export default function DataKamarPage() {
                     type="button"
                     onClick={() => {
                       setShowModal(false);
-                      setEditingKamar(null);
+                      setEditingJenisKamar(null);
                       setForm({
-                        kode_kamar: '',
+                        nama_jenis_kamar: '',
                         id_kos: '',
-                        id_jenis_kamar: '',
-                        status_kamar: 'Tersedia',
-                        catatan: '',
                       });
                     }}
                     className="flex-1 border border-gray-300 rounded-lg py-2 text-gray-700 hover:bg-gray-50 transition"
@@ -420,7 +414,7 @@ export default function DataKamarPage() {
 
       {/* === MODAL DELETE CONFIRMATION === */}
       <AnimatePresence>
-        {showDeleteModal && selectedKamar && (
+        {showDeleteModal && selectedJenisKamar && (
           <motion.div
             className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
             initial={{ opacity: 0 }}
@@ -437,8 +431,8 @@ export default function DataKamarPage() {
                 Konfirmasi Hapus
               </h2>
               <p className="text-sm text-gray-600 mb-5">
-                Apakah Anda yakin ingin menghapus kamar{' '}
-                <b>{selectedKamar.kode}</b>?
+                Apakah Anda yakin ingin menghapus jenis kamar{' '}
+                <b>{selectedJenisKamar.nama}</b>?
               </p>
 
               <div className="flex justify-center gap-3">
@@ -451,10 +445,10 @@ export default function DataKamarPage() {
                 <button
                   onClick={() => {
                     setData((prev) =>
-                      prev.filter((kamar) => kamar.id_kamar !== selectedKamar.id)
+                      prev.filter((item) => item.id_jenis_kamar !== selectedJenisKamar.id)
                     );
                     setShowDeleteModal(false);
-                    alert(`✅ Kamar "${selectedKamar.kode}" telah dihapus.`);
+                    alert(`✅ Jenis kamar "${selectedJenisKamar.nama}" telah dihapus.`);
                   }}
                   className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
                 >

@@ -67,7 +67,7 @@ export default function Sidebar() {
       label: 'Data Master',
       icon: <Layers size={18} />,
       children: [
-        { label: 'Master Kos', href: '/datamaster/master-kos' },
+        { label: 'Master Kos', href: '/datamaster/data-master-kos' },
         { label: 'Data Jenis Kamar', href: '/datamaster/data-jenis-kamar' },
         { label: 'Data Kamar', href: '/datamaster/data-kamar' },
         { label: 'Data Parkir', href: '/datamaster/data-parkir' },
