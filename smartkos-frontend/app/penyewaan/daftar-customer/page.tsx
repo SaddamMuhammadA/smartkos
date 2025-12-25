@@ -116,66 +116,107 @@ export default function DaftarCustomerPage() {
         />
       </div>
 
-      {/* TABLE */}
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+      {/* MOBILE VIEW */}
+      <div className="md:hidden space-y-4">
+        {filteredData.map((item) => (
+          <div
+            key={item.id}
+            className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm"
+          >
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="font-semibold text-gray-800">{item.nama}</p>
+                <p className="text-sm text-gray-500">{item.telp}</p>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleEdit(item)}
+                  className="p-2 rounded-lg bg-amber-100 text-amber-700 hover:bg-amber-200 transition"
+                >
+                  <Edit size={14} />
+                </button>
+
+                <button
+                  onClick={() => {
+                    setSelectedCustomer({ id: item.id, nama: item.nama });
+                    setShowDeleteModal(true);
+                  }}
+                  className="p-2 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
+
+            {item.fotoKtp && (
+              <img
+                src={item.fotoKtp}
+                alt="KTP"
+                className="mt-3 w-full h-40 object-cover rounded-lg border"
+              />
+            )}
+          </div>
+        ))}
+
+        {filteredData.length === 0 && (
+          <p className="text-center text-gray-400 italic py-6">
+            Tidak ada data customer
+          </p>
+        )}
+      </div>
+
+
+      {/* DESKTOP TABLE */}
+      <div className="hidden md:block bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm text-gray-700">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="px-4 py-3 text-left font-medium">Nama</th>
-                <th className="px-4 py-3 text-left font-medium">No. Telepon</th>
-                <th className="px-4 py-3 text-left font-medium">Foto KTP</th>
-                <th className="px-4 py-3 text-center font-medium">Aksi</th>
+                <th className="px-4 py-3 text-left">Nama</th>
+                <th className="px-4 py-3 text-left">No. Telepon</th>
+                <th className="px-4 py-3 text-left">Foto KTP</th>
+                <th className="px-4 py-3 text-center">Aksi</th>
               </tr>
             </thead>
+
             <tbody>
               {filteredData.map((item) => (
-                <tr key={item.id} className="border-b hover:bg-gray-50">
+                <tr key={item.id} className="border-b hover:bg-gray-50 transition">
                   <td className="px-4 py-3">{item.nama}</td>
                   <td className="px-4 py-3">{item.telp}</td>
                   <td className="px-4 py-3">
                     {item.fotoKtp ? (
                       <img
                         src={item.fotoKtp}
-                        alt="KTP"
                         className="w-14 h-10 object-cover rounded border"
                       />
                     ) : (
-                      <span className="text-gray-400 italic">Tidak ada</span>
+                      <span className="italic text-gray-400">Tidak ada</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-center flex justify-center gap-2">
-                    <button
-                      onClick={() => handleEdit(item)}
-                      className="px-3 py-1.5 text-xs bg-amber-100 text-amber-700 rounded-md hover:bg-amber-200 transition"
-                    >
-                      <Edit size={14} />
-                    </button>
+                  <td className="px-4 py-3 text-center">
+                    <div className="flex justify-center gap-2">
+                      <button
+                        onClick={() => handleEdit(item)}
+                        className="px-3 py-1.5 bg-amber-100 text-amber-700 rounded-md hover:bg-amber-200 transition"
+                      >
+                        <Edit size={14} />
+                      </button>
 
-                    <button
-                    onClick={() => {
-                        setSelectedCustomer({ id: item.id, nama: item.nama });
-                        setShowDeleteModal(true);
-                    }}
-                    className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition"
-                    >
-                    Hapus
-                    </button>
-
-
+                      <button
+                        onClick={() => {
+                          setSelectedCustomer({ id: item.id, nama: item.nama });
+                          setShowDeleteModal(true);
+                        }}
+                        className="px-3 py-1.5 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition"
+                      >
+                        Hapus
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
-              {filteredData.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={4}
-                    className="px-4 py-6 text-center text-gray-400 italic"
-                  >
-                    Tidak ada data customer
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>
