@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class AdminInviteController extends Controller
 {
@@ -27,7 +28,7 @@ class AdminInviteController extends Controller
          * AUTHORIZATION (UI sudah filter,
          * backend tetap WAJIB validasi)
          */
-        if (!in_array(auth()->user()->role, ['MasterAdmin', 'SuperAdmin'])) {
+        if (!in_array(Auth::user()->role, ['MasterAdmin', 'SuperAdmin'])) {
             abort(403, 'Unauthorized');
         }
 
@@ -56,7 +57,7 @@ class AdminInviteController extends Controller
             'role'       => $request->role,
             'token'      => Str::random(40),
             'expires_at' => Carbon::now()->addDays(3),
-            'invited_by' => auth()->id(),
+            'invited_by' => Auth::id(),
         ]);
 
         /**
