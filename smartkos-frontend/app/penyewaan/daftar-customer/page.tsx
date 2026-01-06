@@ -5,17 +5,15 @@ import { PlusCircle, Edit, Trash2, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Customer {
-  id: number;
-  nama: string;
-  telp: string;
-  fotoKtp?: string;
+  id_customer: number;
+  nama_customer: string;
+  no_telp?: string;
+  foto_ktp?: string;
 }
 
 export default function DaftarCustomerPage() {
   const [data, setData] = useState<Customer[]>([
-    { id: 1, nama: 'Saddam Muhammad', telp: '08123456789', fotoKtp: '/ktp/dummy1.png' },
-    { id: 2, nama: 'Rizky Alamsyah', telp: '08567890123', fotoKtp: '/ktp/dummy2.png' },
-    { id: 3, nama: 'Dimas Adi', telp: '08234567890', fotoKtp: '/ktp/dummy3.png' },
+
   ]);
 
   const [search, setSearch] = useState('');
@@ -27,7 +25,7 @@ export default function DaftarCustomerPage() {
 
 
   const filteredData = data.filter((item) =>
-    item.nama.toLowerCase().includes(search.toLowerCase())
+    item.nama_customer.toLowerCase().includes(search.toLowerCase())
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,15 +46,15 @@ export default function DaftarCustomerPage() {
     if (editingCustomer) {
       // Update
       setData((prev) =>
-        prev.map((c) => (c.id === editingCustomer.id ? { ...c, ...form } : c))
+        prev.map((c) => (c.id_customer === editingCustomer.id_customer ? { ...c, ...form } : c))
       );
     } else {
       // Tambah baru
       const newCustomer: Customer = {
-        id: data.length + 1,
-        nama: form.nama,
-        telp: form.telp,
-        fotoKtp: form.fotoKtp,
+        id_customer: Date.now(),
+        nama_customer: form.nama,
+        no_telp: form.telp,
+        foto_ktp: form.fotoKtp,
       };
       setData([...data, newCustomer]);
     }
@@ -69,16 +67,16 @@ export default function DaftarCustomerPage() {
   const handleEdit = (item: Customer) => {
     setEditingCustomer(item);
     setForm({
-      nama: item.nama,
-      telp: item.telp,
-      fotoKtp: item.fotoKtp || '',
+      nama: item.nama_customer,
+      telp: item.no_telp || '',
+      fotoKtp: item.foto_ktp || '',
     });
     setShowModal(true);
   };
 
   const handleDelete = (id: number) => {
     if (confirm('Yakin ingin menghapus customer ini?')) {
-      setData(data.filter((item) => item.id !== id));
+      setData((prev) => prev.filter((item) => item.id_customer !== id));
     }
   };
 
@@ -120,13 +118,13 @@ export default function DaftarCustomerPage() {
       <div className="md:hidden space-y-4">
         {filteredData.map((item) => (
           <div
-            key={item.id}
+            key={item.id_customer}
             className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm"
           >
             <div className="flex justify-between items-start">
               <div>
-                <p className="font-semibold text-gray-800">{item.nama}</p>
-                <p className="text-sm text-gray-500">{item.telp}</p>
+                <p className="font-semibold text-gray-800">{item.nama_customer}</p>
+                <p className="text-sm text-gray-500">{item.no_telp}</p>
               </div>
 
               <div className="flex gap-2">
@@ -139,7 +137,7 @@ export default function DaftarCustomerPage() {
 
                 <button
                   onClick={() => {
-                    setSelectedCustomer({ id: item.id, nama: item.nama });
+                    setSelectedCustomer({ id: item.id_customer, nama: item.nama_customer });
                     setShowDeleteModal(true);
                   }}
                   className="p-2 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition"
@@ -149,9 +147,9 @@ export default function DaftarCustomerPage() {
               </div>
             </div>
 
-            {item.fotoKtp && (
+            {item.foto_ktp && (
               <img
-                src={item.fotoKtp}
+                src={item.foto_ktp}
                 alt="KTP"
                 className="mt-3 w-full h-40 object-cover rounded-lg border"
               />
@@ -182,13 +180,13 @@ export default function DaftarCustomerPage() {
 
             <tbody>
               {filteredData.map((item) => (
-                <tr key={item.id} className="border-b hover:bg-gray-50 transition">
-                  <td className="px-4 py-3">{item.nama}</td>
-                  <td className="px-4 py-3">{item.telp}</td>
+                <tr key={item.id_customer} className="border-b hover:bg-gray-50">
+                  <td className="px-4 py-3">{item.nama_customer}</td>
+                  <td className="px-4 py-3">{item.no_telp}</td>
                   <td className="px-4 py-3">
-                    {item.fotoKtp ? (
+                    {item.foto_ktp ? (
                       <img
-                        src={item.fotoKtp}
+                        src={item.foto_ktp}
                         className="w-14 h-10 object-cover rounded border"
                       />
                     ) : (
@@ -206,7 +204,7 @@ export default function DaftarCustomerPage() {
 
                       <button
                         onClick={() => {
-                          setSelectedCustomer({ id: item.id, nama: item.nama });
+                          setSelectedCustomer({ id: item.id_customer, nama: item.nama_customer });
                           setShowDeleteModal(true);
                         }}
                         className="px-3 py-1.5 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition"
@@ -351,7 +349,7 @@ export default function DaftarCustomerPage() {
           <button
             onClick={() => {
               setData((prev) =>
-                prev.filter((cust) => cust.id !== selectedCustomer.id)
+                prev.filter((cust) => cust.id_customer !== selectedCustomer.id)
               );
               setShowDeleteModal(false);
               alert(`✅ Customer "${selectedCustomer.nama}" telah dihapus.`);

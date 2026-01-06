@@ -41,6 +41,8 @@ export default function DataMasterKosPage() {
     },
   ]);
 
+  
+
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingKos, setEditingKos] = useState<MasterKos | null>(null);

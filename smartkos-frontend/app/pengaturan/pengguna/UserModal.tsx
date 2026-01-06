@@ -2,25 +2,27 @@
 
 import { useEffect, useState } from 'react';
 
-/* ===== EXPORT INTERFACE ===== */
+/* ===== EXPORT TYPE ===== */
 export interface UserFormData {
   name: string;
   email: string;
-  role: 'Admin' | 'SuperAdmin';
+  role: 'SuperAdmin' | 'Admin';
 }
 
 interface Props {
   show: boolean;
   onClose: () => void;
   onSave: (data: UserFormData) => void;
-  editingData?: Partial<UserFormData> | null;
+  defaultValue?: UserFormData | null;
+  isEdit?: boolean;
 }
 
 export default function UserModal({
   show,
   onClose,
   onSave,
-  editingData,
+  defaultValue,
+  isEdit,
 }: Props) {
   const [form, setForm] = useState<UserFormData>({
     name: '',
@@ -29,14 +31,8 @@ export default function UserModal({
   });
 
   useEffect(() => {
-    if (editingData) {
-      setForm({
-        name: editingData.name || '',
-        email: editingData.email || '',
-        role: editingData.role || 'Admin',
-      });
-    }
-  }, [editingData]);
+    if (defaultValue) setForm(defaultValue);
+  }, [defaultValue]);
 
   if (!show) return null;
 
@@ -49,22 +45,23 @@ export default function UserModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="bg-white w-full max-w-md rounded-xl shadow-lg p-5">
         <h2 className="text-lg font-semibold mb-1">
-          {editingData ? 'Edit Pengguna' : 'Tambah Pengguna'}
+          {isEdit ? 'Edit Role Pengguna' : 'Undang Pengguna'}
         </h2>
         <p className="text-xs text-gray-500 mb-4">
-          Password akan dikirim melalui email kepada pengguna
+          Password dikirim otomatis via email (invite link)
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="text-sm font-medium">Nama</label>
             <input
+              required
+              disabled={isEdit}
               value={form.name}
               onChange={(e) =>
                 setForm({ ...form, name: e.target.value })
               }
-              required
-              className="w-full border rounded-lg px-3 py-2 text-sm"
+              className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
             />
           </div>
 
@@ -72,12 +69,13 @@ export default function UserModal({
             <label className="text-sm font-medium">Email</label>
             <input
               type="email"
+              required
+              disabled={isEdit}
               value={form.email}
               onChange={(e) =>
                 setForm({ ...form, email: e.target.value })
               }
-              required
-              className="w-full border rounded-lg px-3 py-2 text-sm"
+              className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
             />
           </div>
 
@@ -110,7 +108,7 @@ export default function UserModal({
               type="submit"
               className="flex-1 bg-blue-600 text-white rounded-lg py-2 hover:bg-blue-700"
             >
-              Simpan & Kirim Email
+              {isEdit ? 'Simpan Perubahan' : 'Kirim Undangan'}
             </button>
           </div>
         </form>
