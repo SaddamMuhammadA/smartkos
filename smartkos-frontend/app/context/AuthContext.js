@@ -1,6 +1,6 @@
-// context/AuthContext.js
+// frontend/context/AuthContext.js
 import { createContext, useState, useContext, useEffect } from 'react';
-import api from '@/lib/axios';
+import api from '@/lib/api';
 import { useRouter } from 'next/router';
 
 const AuthContext = createContext({});
@@ -18,15 +18,23 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuth = async () => {
     const token = localStorage.getItem('access_token');
-    if (token) {
-      try {
-        const response = await api.get('/user');
-        setUser(response.data);
-      } catch (error) {
-        logout();
-      }
+    
+    if (!token) {
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+
+    try {
+      const response = await api.get('/user');
+      setUser(response.data);
+    } catch (error) {
+      // Jika token invalid, clear storage
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('user');
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const login = async (credentials) => {
@@ -34,6 +42,7 @@ export const AuthProvider = ({ children }) => {
       const response = await api.post('/login', credentials);
       const { user, access_token } = response.data;
       
+      // Simpan token dan user
       localStorage.setItem('access_token', access_token);
       localStorage.setItem('user', JSON.stringify(user));
       setUser(user);
@@ -62,10 +71,15 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await api.post('/logout');
+    } catch (error) {
+      console.error('Logout error:', error);
     } finally {
+      // Clear storage
       localStorage.removeItem('access_token');
       localStorage.removeItem('user');
       setUser(null);
+      
+      // Redirect to login
       router.push('/login');
     }
   };
